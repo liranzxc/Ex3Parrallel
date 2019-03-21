@@ -1,0 +1,7 @@
+﻿  withMod.cpp
+d:\initialmpiproject\initialmpiproject\withmod.cpp(40): warning C4101: 'y': unreferenced local variable
+d:\initialmpiproject\initialmpiproject\withmod.cpp(40): warning C4101: 'x': unreferenced local variable
+  InitialMPIproject.cpp
+  Generating Code...
+  InitialMPIproject.vcxproj -> D:\InitialMPIproject\x64\Debug\InitialMPIproject.exe
+  InitialMPIproject.vcxproj -> D:\InitialMPIproject\x64\Debug\InitialMPIproject.pdb (Full PDB)
