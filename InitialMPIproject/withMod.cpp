@@ -14,6 +14,8 @@
 
 
 #define HEAVY 100000
+#define N 20
+#define MasterP 0
 
 // This function performs heavy computations, 
 // its run time depends on x and y values
@@ -36,9 +38,7 @@ int main(int argc, char *argv[])
 {
 
 	int  namelen, numprocs, myid;
-
 	int x, y;
-	int N = 20;
 	double answer = 0;
 	int ChunkSize, reciveCounter = 0, startIndex, endIndex, mod;
 	double temp, StartTime, EndTime;
@@ -58,22 +58,19 @@ int main(int argc, char *argv[])
 	// my code
 
 	StartTime = MPI_Wtime();
-
-	//printf("num of process %d", numprocs);
-	if (myid == 0)
+	//MasterP configuration
+	if (myid == MasterP)
 	{
-		 mod = N % (numprocs - 1); // fixed size jobs or not 
+		mod = N % (numprocs - 1); // remainder 
 
-		if (mod != 0)
-		{
-			ChunkSize = N / (numprocs - 1); 
+			ChunkSize = N / (numprocs - 1);
 
-			for (int i = 1; i < numprocs-1; i++)
+			for (int i = 1; i < numprocs - 1; i++)
 			{
-				 startIndex = (i - 1)*ChunkSize;
+				startIndex = (i - 1)*ChunkSize;
 
-				 endIndex = i*ChunkSize;
-
+				endIndex = i*ChunkSize;
+        //send to Slaves
 				MPI_Send(&startIndex, 1, MPI_INT, i, 0, MPI_COMM_WORLD); // send to process i a SizeChunk
 				MPI_Send(&endIndex, 1, MPI_INT, i, 0, MPI_COMM_WORLD); // send to process i a SizeChunk
 
@@ -81,37 +78,20 @@ int main(int argc, char *argv[])
 
 			// send to last chunk + mod
 			int startIndex = (numprocs - 2)*ChunkSize;
-			int endIndex = startIndex + ChunkSize+mod;
-
+			int endIndex = startIndex + ChunkSize + mod;
+      //send to Slave with id numprocs-1
 			MPI_Send(&startIndex, 1, MPI_INT, numprocs - 1, 0, MPI_COMM_WORLD); // send to last process  a SizeChunk
 			MPI_Send(&endIndex, 1, MPI_INT, numprocs - 1, 0, MPI_COMM_WORLD); // send to last process  a SizeChunk
 
 
-
-		}
-		else {
-
-			ChunkSize = N / (numprocs - 1);
-			// fix size
-			for (int i = 1; i < numprocs; i++)
-			{
-
-				int startIndex = (i - 1)*ChunkSize;
-				int endIndex = i*ChunkSize;
-
-				MPI_Send(&startIndex, 1, MPI_INT, i, 0, MPI_COMM_WORLD); // send to process i a SizeChunk
-				MPI_Send(&endIndex, 1, MPI_INT, i, 0, MPI_COMM_WORLD); // send to process i a SizeChunk
-
-			}
-		}
-		
 		while (reciveCounter != numprocs - 1)
 		{
+      //recive from Slaves
 			MPI_Recv(&temp, 1, MPI_DOUBLE, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
 			answer += temp;
 			reciveCounter++;
 		}
-		
+
 
 		EndTime = MPI_Wtime();
 
@@ -120,18 +100,17 @@ int main(int argc, char *argv[])
 		printf("Chunk = %d\n", ChunkSize);
 		printf("Mod = %d\n", mod);
 
-
-
 	}
+	//Slave configuration
 	else
 	{
 		int start, end;
+    //recive from MasterP
 		MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 		MPI_Recv(&end, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 
 		//int startIndex = (myid - 1)*input;
 		//int endIndex = myid*input;
-
 		for (int x = start; x < end; x++)
 		{
 			for (int y = 0; y < N; y++)
@@ -139,6 +118,7 @@ int main(int argc, char *argv[])
 				answer += heavy(x, y);
 			}
 		}
+    //send to MasterP
 		MPI_Send(&answer, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 
 
