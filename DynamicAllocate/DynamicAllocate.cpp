@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	double answer = 0, temp;
 	int num_of_process_that_exit = 0;
 
-	int jobTasks = N;
+	int jobTasks = N-1;
 
 	char processor_name[MPI_MAX_PROCESSOR_NAME];
 
