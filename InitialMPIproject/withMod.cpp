@@ -106,8 +106,8 @@ int main(int argc, char *argv[])
 	{
 		int start, end;
     //recive from MasterP
-		MPI_Recv(&start, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-		MPI_Recv(&end, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+		MPI_Recv(&start, 1, MPI_INT, MasterP, 0, MPI_COMM_WORLD, &status);
+		MPI_Recv(&end, 1, MPI_INT, MasterP, 0, MPI_COMM_WORLD, &status);
 
 		//int startIndex = (myid - 1)*input;
 		//int endIndex = myid*input;
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 			}
 		}
     //send to MasterP
-		MPI_Send(&answer, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+		MPI_Send(&answer, 1, MPI_DOUBLE, MasterP, 0, MPI_COMM_WORLD);
 
 
 

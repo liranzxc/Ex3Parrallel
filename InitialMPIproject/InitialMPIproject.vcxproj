@@ -156,7 +156,6 @@
     <ClInclude Include="withMod.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="InitialMPIproject.cpp" />
     <ClCompile Include="withMod.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
